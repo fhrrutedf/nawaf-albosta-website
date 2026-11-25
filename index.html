@@ -333,7 +333,7 @@
   footer a{ text-decoration:none; display:inline-block; padding:3px 0; min-height:32px; }
   footer a:hover{ color:var(--red); }
   .foot-bottom{
-    border-top:1px solid var(--line); padding:20px 0 calc(20px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line); padding:20px 0 calc(88px + env(safe-area-inset-bottom));
     display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; color:var(--faint); font-size:14px;
   }
 
@@ -451,6 +451,33 @@
   .plan-item span{ color:var(--muted); font-size:14.5px; }
   .dash-note{ color:var(--faint); font-size:14px; margin-top:16px; line-height:1.8; }
   .status-pill{ font-size:12.5px; font-weight:700; padding:3px 11px; border-radius:999px; background:var(--red-soft); color:var(--red); white-space:nowrap; }
+  #dashboard[hidden]{ display:none !important; }
+
+  /* ---------- Dashboard password gate ---------- */
+  .admin-link{
+    background:none; border:none; padding:0; cursor:pointer; font-family:var(--body);
+    font-size:13px; color:var(--faint); opacity:.75;
+  }
+  .admin-link:hover{ color:var(--muted); opacity:1; text-decoration:underline; }
+  .gate{
+    position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
+    background:rgba(10,8,7,.72); backdrop-filter:blur(6px); padding:20px;
+  }
+  .gate.open{ display:flex; }
+  .gate-card{
+    position:relative; width:100%; max-width:400px; background:var(--surface);
+    border:1px solid var(--line); border-radius:18px; padding:30px 28px 28px; text-align:start;
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+  }
+  .gate-card h3{ font-family:var(--head); font-size:22px; font-weight:900; margin-bottom:8px; }
+  .gate-card p{ color:var(--muted); font-size:15px; line-height:1.8; margin-bottom:18px; }
+  .gate-x{
+    position:absolute; top:12px; inset-inline-end:12px; background:var(--surface-2);
+    border:1px solid var(--line); color:var(--ink); border-radius:9px; width:38px; height:38px;
+    cursor:pointer; font-size:15px; line-height:1;
+  }
+  .gate-x:hover{ border-color:var(--red); color:var(--red); }
+  .gate-form{ display:grid; gap:12px; }
 
   /* ---------- Responsive ---------- */
   @media (max-width: 960px){
@@ -506,7 +533,6 @@
       <a href="#articles">المقالات</a>
       <a href="#guide">الدليل المجاني</a>
       <a href="#faq">الأسئلة الشائعة</a>
-      <a href="#dashboard">لوحة التحكم</a>
     </nav>
     <a class="btn btn-red nav-cta" href="#guide">حمّل الدليل المجاني</a>
   </div>
@@ -839,8 +865,8 @@
     </div>
   </section>
 
-  <!-- ===== Dashboard ===== -->
-  <section class="dash" id="dashboard">
+  <!-- ===== Dashboard (hidden — password protected) ===== -->
+  <section class="dash" id="dashboard" hidden>
     <div class="wrap">
       <div class="sec-head">
         <span class="kicker">لوحة التحكم — لنواف فقط</span>
@@ -983,7 +1009,6 @@
           <li><a href="#guide">الدليل المجاني</a></li>
           <li><a href="#resources">مكتبة الموارد</a></li>
           <li><a href="#faq">الأسئلة الشائعة</a></li>
-          <li><a href="#dashboard">لوحة التحكم</a></li>
         </ul>
       </div>
       <div>
@@ -999,6 +1024,7 @@
     <div class="foot-bottom">
       <span>© 2026 نواف البوسطة — جميع الحقوق محفوظة</span>
       <span>noaf.ai</span>
+      <button class="admin-link" id="adminOpen" type="button">لوحة التحكم</button>
     </div>
   </div>
 </footer>
@@ -1024,6 +1050,18 @@
       <h3>طبّق ما قرأته أسرع مع الدليل المجاني</h3>
       <p>الدليل يجمع خمسة برومبتات جاهزة للبدء العملي في ملف PDF واحد.</p>
       <button class="btn btn-red" id="readerToGuide" type="button">احصل على الدليل المجاني</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Dashboard gate (owner only) ===== -->
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="gate-card">
+    <button class="gate-x" id="gateClose" type="button" aria-label="إغلاق">✕</button>
+    <h3 id="gateTitle">لوحة التحكم</h3>
+    <p>هذا القسم خاص بصاحب الموقع ولا يظهر للزوار أبداً. إظهاره يعمل في جلستك الحالية فقط — وتحديث الصفحة يعيد إخفاءه.</p>
+    <div class="gate-form">
+      <button class="btn btn-red" id="gateShow" type="button" style="justify-self:start;">إظهار اللوحة</button>
     </div>
   </div>
 </div>
@@ -1503,6 +1541,45 @@
 
   /* ---------- Init ---------- */
   renderArticles(); renderVideos(); renderResources(); renderIdeas(); updateCounters();
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= Dashboard gate (owner only) =================
+     اللوحة مخفية تماماً عن الزوار ولا تظهر إلا من رابط «لوحة التحكم»
+     الصغير في التذييل. الإظهار يسري على هذه الجلسة فقط — تحديث
+     الصفحة يعيد إخفاءها. */
+  var dash = document.getElementById("dashboard");
+  var gate = document.getElementById("gate");
+  var unlocked = false;
+
+  function openGate(){
+    if (unlocked) { dash.scrollIntoView({ behavior: "smooth" }); return; }
+    gate.classList.add("open");
+    document.body.style.overflow = "hidden";
+    setTimeout(function(){ document.getElementById("gateShow").focus(); }, 40);
+  }
+  function closeGate(){
+    gate.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  function unlock(){
+    unlocked = true;
+    closeGate();
+    dash.hidden = false;
+    dash.scrollIntoView({ behavior: "smooth" });
+  }
+
+  document.getElementById("adminOpen").addEventListener("click", openGate);
+  document.getElementById("gateClose").addEventListener("click", closeGate);
+  document.getElementById("gateShow").addEventListener("click", unlock);
+  gate.addEventListener("click", function(e){ if (e.target === gate) closeGate(); });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && gate.classList.contains("open")) closeGate();
+  });
 })();
 </script>
 </body>
