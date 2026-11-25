@@ -20,6 +20,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=Almarai:wght@400;700;800&display=swap" rel="stylesheet" />
+<!-- بوابة الدفع الإلكترونية Tekram Pay -->
+<script src="https://tekrams.com/tekram-pay.js" defer></script>
 <script>
 /* =====================================================================
    إعدادات الموقع — عدّل من هنا فقط
@@ -527,6 +529,54 @@ window.SITE_CONFIG = {
   .gate-card p.gate-err{ color:var(--red-deep); font-size:14px; line-height:1.6; margin:0; display:none; }
   .gate-card p.gate-err.show{ display:block; }
 
+  /* ---------- Registration modal (Tekram Pay) ---------- */
+  .reg{
+    position:fixed; inset:0; z-index:96; display:none; align-items:flex-start; justify-content:center;
+    background:rgba(20,20,20,.55); backdrop-filter:blur(6px); padding:20px; overflow-y:auto;
+  }
+  .reg.open{ display:flex; }
+  .reg-card{
+    position:relative; width:100%; max-width:460px; margin:auto; background:var(--surface);
+    border:1px solid var(--line); border-radius:18px; padding:30px 28px 26px;
+    box-shadow:0 24px 60px rgba(20,20,20,.35);
+  }
+  .reg-card h3{ font-family:var(--head); font-size:22px; font-weight:900; margin-bottom:16px; padding-inline-end:34px; }
+  .reg-price{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--red-soft); border:1px solid var(--line); border-radius:14px; padding:14px 18px; margin-bottom:16px;
+  }
+  .reg-price span{ font-weight:700; font-size:15.5px; }
+  .reg-price b{ font-family:var(--head); font-weight:900; font-size:30px; color:var(--red); line-height:1; }
+  .reg-fees{ font-size:15px; color:var(--muted); margin-bottom:14px; }
+  .reg-fees p{ margin-bottom:6px; }
+  .reg-fees ul{ list-style:none; margin:0; padding:0; display:grid; gap:4px; }
+  .reg-fees b{ color:var(--ink); }
+  .reg-warn{
+    background:#FFF7E8; border:1px solid #f0dcb4; border-radius:12px; padding:13px 16px;
+    font-size:14.5px; line-height:1.8; color:#5c4a1e; margin-bottom:18px;
+  }
+  .reg-inc{ margin-bottom:22px; }
+  .reg-inc > b{ display:block; font-size:15.5px; margin-bottom:8px; }
+  .reg-inc ul{ list-style:none; margin:0; padding:0; display:grid; gap:7px; }
+  .reg-inc li{ display:flex; gap:9px; align-items:flex-start; font-size:15.5px; }
+  .reg-inc li svg{ width:19px; height:19px; stroke:var(--red); fill:none; stroke-width:2.4; flex-shrink:0; margin-top:5px; }
+  .reg-wa{
+    display:block; text-align:center; margin-top:6px; color:var(--red-deep); font-weight:700;
+    font-size:15px; text-decoration:none; min-height:44px; padding-top:10px;
+  }
+  .reg-wa:hover{ color:var(--red); text-decoration:underline; }
+  .buy-alt{ text-align:center; color:var(--muted); font-size:15.5px; padding:4px 0 54px; }
+  .buy-link{
+    background:none; border:none; padding:0; font-family:var(--body); font-size:15.5px; font-weight:800;
+    color:var(--red); cursor:pointer; text-decoration:underline;
+  }
+  .buy-link:hover{ color:var(--red-deep); }
+  .foot-buy{
+    background:none; border:none; font-family:var(--body); font-size:15.5px; color:#c9c0b4;
+    cursor:pointer; padding:3px 0; min-height:32px;
+  }
+  .foot-buy:hover{ color:#ff6b6f; }
+
   /* ---------- Internal pages (hash router) ---------- */
   .page{ display:none; }
   .page.active{ display:block; }
@@ -542,6 +592,37 @@ window.SITE_CONFIG = {
   .page-head .intro{ color:var(--muted); font-size:17.5px; margin-top:12px; max-width:44em; }
   .auds.two{ grid-template-columns:repeat(2,1fr); }
 
+  /* ---------- Thank-you page (after Tekram payment) ---------- */
+  .ty-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:38px 32px; text-align:center; box-shadow:0 18px 44px rgba(20,20,20,.07);
+  }
+  .ty-card .ok{
+    width:74px; height:74px; border-radius:50%; background:var(--red-soft); margin:0 auto 20px;
+    display:grid; place-items:center;
+  }
+  .ty-card .ok svg{ width:36px; height:36px; stroke:var(--red); fill:none; stroke-width:2.4; }
+  .ty-card h1{ font-size:clamp(27px,4.4vw,38px); font-weight:900; margin-bottom:10px; }
+  .ty-card .lead{ color:var(--muted); font-size:17px; max-width:32em; margin:0 auto; }
+  .ty-order{
+    display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:26px 0; text-align:start;
+  }
+  .ty-order > div{
+    background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:16px 18px;
+    display:grid; gap:5px; align-content:center;
+  }
+  .ty-order span.lbl{ color:var(--muted); font-size:14px; font-weight:700; }
+  .ty-order b{ font-family:var(--head); font-weight:900; font-size:19px; }
+  .ty-order .badge{ margin-inline-start:0; justify-self:start; font-size:14px; padding:5px 14px; }
+  .ty-steps{ text-align:start; margin-bottom:28px; }
+  .ty-steps > b{ display:block; font-family:var(--head); font-size:18px; font-weight:800; margin-bottom:12px; }
+  .ty-steps .gi{ margin-bottom:10px; }
+  .btn-wa{ background:#22b358; color:#fff; box-shadow:0 10px 26px rgba(34,179,88,.28); width:100%; }
+  .btn-wa:hover{ background:#1b9a4b; }
+  .btn-wa svg{ width:21px; height:21px; fill:#fff; }
+  .ty-note{ font-size:14px; color:var(--faint); margin-top:16px; line-height:1.8; }
+  @media (max-width: 560px){ .ty-order{ grid-template-columns:1fr; } .ty-card{ padding:30px 20px; } }
+
   /* ---------- Responsive ---------- */
   @media (max-width: 960px){
     nav.links{
@@ -550,7 +631,10 @@ window.SITE_CONFIG = {
     }
     nav.links.open{ display:flex; }
     nav.links a{ padding:12px 10px; }
-    .nav-cta{ display:none; }
+    .nav{ gap:10px; }
+    .brand{ gap:8px; }
+    .brand-text b{ font-size:16.5px; }
+    .nav-cta{ font-size:13.5px; padding:8px 11px; min-height:44px; white-space:nowrap; }
     .burger{ display:grid; }
     .hero-grid, .about-grid, .guide-grid{ grid-template-columns:1fr; }
     .hero{ padding-top:44px; }
@@ -596,7 +680,6 @@ window.SITE_CONFIG = {
       <a href="#/courses" data-nav="courses">الكورسات</a>
       <a href="#/programs" data-nav="programs">البرامج التدريبية</a>
     </nav>
-    <a class="btn btn-red nav-cta" href="#guide">حمّل الدليل المجاني</a>
   </div>
 </header>
 
@@ -839,8 +922,8 @@ window.SITE_CONFIG = {
             <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>عروض تقديمية من نص الدرس: هيكل أولاً، ثم تصميم في دقائق</li>
             <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>برومبتات جاهزة بالعربية لكل مهام المعلم المتكررة</li>
           </ul>
-          <a class="btn btn-red" href="https://course.manasadigital.com" target="_blank" rel="noopener">اشترِ الكورس</a>
-          <p class="note">الدفع عبر صفحة الكورس: شام كاش من داخل سوريا، وبالبطاقات ومدى وبايبال من خارجها — ضمان استرجاع 7 أيام.</p>
+          <button class="btn btn-red" type="button" data-buy-course>اشترِ الكورس</button>
+          <p class="note">الدفع عبر بوابة Tekram الآمنة: شام كاش من داخل سوريا، وبالبطاقات من خارجها — ضمان استرجاع 7 أيام.</p>
         </article>
       </div>
     </div>
@@ -1136,8 +1219,8 @@ window.SITE_CONFIG = {
             <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>عروض تقديمية من نص الدرس: هيكل أولاً، ثم تصميم في دقائق</li>
             <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>برومبتات جاهزة بالعربية لكل مهام المعلم المتكررة</li>
           </ul>
-          <a class="btn btn-red" href="https://course.manasadigital.com" target="_blank" rel="noopener">اشترِ الكورس</a>
-          <p class="note">الدفع عبر صفحة الكورس: شام كاش من داخل سوريا، وبالبطاقات ومدى وبايبال من خارجها — ضمان استرجاع 7 أيام.</p>
+          <button class="btn btn-red" type="button" data-buy-course>اشترِ الكورس</button>
+          <p class="note">الدفع عبر بوابة Tekram الآمنة: شام كاش من داخل سوريا، وبالبطاقات من خارجها — ضمان استرجاع 7 أيام.</p>
         </article>
       </div>
     </div>
@@ -1213,8 +1296,48 @@ window.SITE_CONFIG = {
       </div>
     </div>
   </section>
-
   </div>
+  <div class="page" id="page-thankyou" data-route="thankyou">
+  <!-- ===== Thank-you — shown after a successful Tekram payment (return_url lands here) ===== -->
+  <div class="page-head">
+    <div class="wrap">
+      <a class="back-link" href="#/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg> العودة إلى الرئيسية</a>
+    </div>
+  </div>
+  <section style="padding-top:0;">
+    <div class="wrap">
+      <div class="course-wrap">
+        <div class="ty-card">
+          <span class="ok"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <h1>تم تأكيد الدفع بنجاح</h1>
+          <p class="lead">شكراً لاشتراكك في كورس «الذكاء الاصطناعي للمعلمين». اكتمل طلبك، وخطوة واحدة تفصلك عن بدء التعلّم.</p>
+          <div class="ty-order">
+            <div>
+              <span class="lbl">رقم مرجع الطلب</span>
+              <b id="tyOrderId" dir="ltr">—</b>
+            </div>
+            <div>
+              <span class="lbl">حالة الطلب</span>
+              <span class="badge badge-live">مدفوع ومكتمل</span>
+            </div>
+          </div>
+          <div class="ty-steps">
+            <b>التفعيل الفوري — ماذا يحدث بعد إرسال رسالة واتساب؟</b>
+            <div class="gi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>إضافة إلى مجموعة Telegram</b><span>تُضاف فوراً إلى مجموعة Telegram الخاصة بالكورس، حيث تصلك الدروس والمتابعة.</span></div></div>
+            <div class="gi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>تسليم الحقائب التدريبية</b><span>تستلم الحقائب التدريبية الكاملة للكورس مع كل المواد المرافقة.</span></div></div>
+            <div class="gi"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>ملخصات PDF والقوالب الجاهزة</b><span>تصلك ملخصات PDF لكل وحدة، ومكتبة القوالب والبرومبتات الجاهزة للاستخدام الفوري في شغلك.</span></div></div>
+          </div>
+          <a class="btn btn-wa" id="tyWa" href="https://wa.me/963985323170" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.2 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.4-.7-2.9-1.2-4.7-4.1-4.9-4.3-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.4.5c-.1.1-.3.3-.1.6.1.3.7 1.2 1.6 1.9 1.1.9 2 1.2 2.3 1.3.3.1.5.1.6-.1l1-1.2c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1.2z"/></svg>
+            تفعيل حسابي واستلام الكورس عبر WhatsApp
+          </a>
+          <p class="ty-note">ضمان الاسترجاع: إن لم يناسبك الكورس، يمكنك طلب استرداد كامل خلال 7 أيام من تاريخ الدفع — راسلنا عبر واتساب مع رقم الطلب.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
+
   <!-- ===== Dashboard (hidden — password protected) ===== -->
   <section class="dash" id="dashboard" hidden>
     <div class="wrap">
@@ -1406,6 +1529,33 @@ window.SITE_CONFIG = {
       <p>الدليل يجمع خمسة برومبتات جاهزة للبدء العملي في ملف PDF واحد.</p>
       <button class="btn btn-red" id="readerToGuide" type="button">احصل على الدليل المجاني</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== Registration modal — Tekram Pay checkout ===== -->
+<div class="reg" id="regModal" role="dialog" aria-modal="true" aria-labelledby="regTitle">
+  <div class="reg-card">
+    <button class="gate-x" id="regClose" type="button" aria-label="إغلاق">✕</button>
+    <h3 id="regTitle">التسجيل في كورس الذكاء الاصطناعي للمعلمين</h3>
+    <div class="reg-price"><span>سعر الكورس</span><b>22$</b></div>
+    <div class="reg-fees">
+      <p>تُضاف رسوم بوابة الدفع عند إتمام الشراء، فيظهر المبلغ:</p>
+      <ul>
+        <li>بالبطاقات: <b>23.50$</b></li>
+        <li>عبر شام كاش: <b>22.45$</b></li>
+      </ul>
+    </div>
+    <p class="reg-warn">تنبيه: نافذة الدفع ستطلب منك الاسم والبريد الإلكتروني ورقم الموبايل. اختر مفتاح دولتك يدوياً عند إدخال الرقم — البوابة تضع افتراضياً <span dir="ltr">+971</span>.</p>
+    <div class="reg-inc">
+      <b>يشمل التسجيل:</b>
+      <ul>
+        <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>وصول فوري ودائم إلى الكورس عبر Telegram</li>
+        <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>4 جلسات مباشرة</li>
+        <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>ضمان استرجاع خلال 7 أيام</li>
+      </ul>
+    </div>
+    <button class="btn btn-red" id="regPay" type="button" style="width:100%;">المتابعة إلى بوابة الدفع الإلكترونية</button>
+    <a class="reg-wa" href="https://wa.me/963985323170" target="_blank" rel="noopener">أو تواصل للتسجيل والمساعدة عبر WhatsApp</a>
   </div>
 </div>
 
@@ -2051,8 +2201,10 @@ window.SITE_CONFIG = {
 
   /* ============ Hash router — internal pages ============
      Routes: #/ (home), #/teachers, #/marketers, #/entrepreneurs,
-     #/courses, #/programs. Plain #anchors keep working: the router
-     activates the page that contains the target, then scrolls to it.
+     #/courses, #/programs, #/thank-you (صفحة الشكر بعد الدفع — ليست
+     في شريط التنقل؛ تصلها بوابة Tekram عبر return_url مع ?order_id=).
+     Plain #anchors keep working: the router activates the page that
+     contains the target, then scrolls to it.
      #admin-nawaf belongs to the dashboard gate and is left alone. */
   var ROUTES = {
     "/": "home",
@@ -2060,7 +2212,8 @@ window.SITE_CONFIG = {
     "/marketers": "marketers",
     "/entrepreneurs": "entrepreneurs",
     "/courses": "courses",
-    "/programs": "programs"
+    "/programs": "programs",
+    "/thank-you": "thankyou"
   };
   var pages = {};
   document.querySelectorAll(".page[data-route]").forEach(function(p){
@@ -2083,11 +2236,34 @@ window.SITE_CONFIG = {
     }
     return null;
   }
+  /* صفحة الشكر: قراءة order_id من الـ hash وعرضه + تضمينه في رسالة واتساب */
+  function fillThankYou(query){
+    var orderId = "";
+    try { orderId = new URLSearchParams(query || "").get("order_id") || ""; }
+    catch (e) {
+      var m = /[?&]order_id=([^&]+)/.exec("?" + (query || ""));
+      if (m) { try { orderId = decodeURIComponent(m[1]); } catch (err) { orderId = m[1]; } }
+    }
+    var idEl = document.getElementById("tyOrderId");
+    if (idEl) idEl.textContent = orderId || "—";
+    var wa = document.getElementById("tyWa");
+    if (wa) {
+      var msg = "مرحباً نواف، أتممت دفع كورس «الذكاء الاصطناعي للمعلمين» بنجاح." +
+        (orderId ? "\nرقم الطلب: " + orderId : "") +
+        "\nأرجو تفعيل حسابي واستلام الكورس.";
+      wa.href = "https://wa.me/963985323170?text=" + encodeURIComponent(msg);
+    }
+  }
   function handle(){
     var h = window.location.hash || "";
     if (h === "#admin-nawaf") return;
     if (h.indexOf("#/") === 0){
-      activate(ROUTES[h.slice(1)] || "home");
+      var rest = h.slice(1);
+      var qIdx = rest.indexOf("?");
+      var path = qIdx >= 0 ? rest.slice(0, qIdx) : rest;
+      var route = ROUTES[path] || "home";
+      activate(route);
+      if (route === "thankyou") fillThankYou(qIdx >= 0 ? rest.slice(qIdx + 1) : "");
       window.scrollTo(0, 0);
       return;
     }
@@ -2104,6 +2280,83 @@ window.SITE_CONFIG = {
   }
   window.addEventListener("hashchange", handle);
   handle();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+
+  /* ============ بوابة الدفع Tekram Pay — نفس قيم الموقع القديم حرفياً ============
+     المبلغ 22$، البائع نفسه، والـ webhook على موقع الكورس كما هو.
+     العودة بعد الدفع (return_url) إلى صفحة الشكر داخل موقعنا نفسه
+     (#/thank-you) — رحلة الدفع كاملة داخل موقعنا بلا تحويل لموقع ثانٍ. */
+  var TEKRAM = {
+    amount: 22,
+    desc: "كورس الذكاء الاصطناعي للمعلمين",
+    seller: "83d55630-5a52-4c43-92b2-120f67fa5372",
+    webhookUrl: "https://course.manasadigital.com/api/webhooks/tekram",
+    thankYou: "https://nawaf-albosta-website.vercel.app/#/thank-you",
+    fallbackSite: "https://course.manasadigital.com"
+  };
+
+  function openTekramCheckout(){
+    var orderId = "ORD-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    var returnUrl = TEKRAM.thankYou + "?order_id=" + orderId;
+    try {
+      if (window.TekramPay && typeof window.TekramPay.checkout === "function") {
+        window.TekramPay.checkout({
+          amount: TEKRAM.amount,
+          seller: TEKRAM.seller,
+          desc: TEKRAM.desc,
+          merchant_order_id: orderId,
+          webhook_url: TEKRAM.webhookUrl,
+          return_url: returnUrl
+        });
+        return;
+      }
+      throw new Error("TekramPay not loaded");
+    } catch (e) {
+      /* الاحتياط الأول: رابط الدفع المباشر بنفس القيم */
+      var directUrl = "https://tekrams.com/checkout?amount=22" +
+        "&seller=" + TEKRAM.seller +
+        "&desc=" + encodeURIComponent(TEKRAM.desc) +
+        "&merchant_order_id=" + orderId +
+        "&webhook_url=" + encodeURIComponent(TEKRAM.webhookUrl) +
+        "&return_url=" + encodeURIComponent(returnUrl);
+      var win = null;
+      try { win = window.open(directUrl, "_blank", "noopener"); } catch (err) {}
+      /* الاحتياط الأخير: صفحة الكورس في الموقع القديم */
+      if (!win) window.location.assign(TEKRAM.fallbackSite);
+    }
+  }
+
+  /* ---------- Registration modal ---------- */
+  var reg = document.getElementById("regModal");
+  var regPay = document.getElementById("regPay");
+  var regLastFocus = null;
+  function openReg(){
+    regLastFocus = document.activeElement;
+    reg.classList.add("open");
+    document.body.style.overflow = "hidden";
+    regPay.focus();
+  }
+  function closeReg(){
+    reg.classList.remove("open");
+    document.body.style.overflow = "";
+    if (regLastFocus && regLastFocus.focus) regLastFocus.focus();
+  }
+  document.querySelectorAll("[data-buy-course]").forEach(function(b){
+    b.addEventListener("click", openReg);
+  });
+  document.getElementById("regClose").addEventListener("click", closeReg);
+  reg.addEventListener("click", function(e){ if (e.target === reg) closeReg(); });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && reg.classList.contains("open")) closeReg();
+  });
+  regPay.addEventListener("click", function(){
+    closeReg();
+    openTekramCheckout();
+  });
 })();
 </script>
 </body>
