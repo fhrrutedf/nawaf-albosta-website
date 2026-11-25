@@ -29,7 +29,7 @@
    ===================================================================== */
 window.SITE_CONFIG = {
   whatsapp: "963985323170",
-  email: ""
+  email: "info@manasadigital.com"
 };
 </script>
 <style>
@@ -211,6 +211,12 @@ window.SITE_CONFIG = {
   .video-ph .play svg{ width:24px; height:24px; fill:#fff; }
   .video-ph b{ color:var(--ink); font-family:var(--head); font-size:16.5px; font-weight:800; }
   .video-slots{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .video-embed{ background:var(--surface); border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+  .video-frame{ aspect-ratio:16/9; background:#000; }
+  .video-frame iframe{ width:100%; height:100%; border:0; display:block; }
+  .video-cap{ padding:16px 18px 18px; }
+  .video-cap b{ font-family:var(--head); font-size:16.5px; font-weight:800; display:block; margin-bottom:4px; }
+  .video-cap span{ color:var(--muted); font-size:14.5px; line-height:1.75; display:block; }
 
   /* ---------- Audience ---------- */
   .auds{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
@@ -714,13 +720,13 @@ window.SITE_CONFIG = {
       <div class="sec-head center">
         <span class="kicker">الإثبات</span>
         <h2>أرقام وشهادات <span class="red">من أرض الواقع</span></h2>
-        <p>هذا القسم مخصص لأرقامي وصوري وشهاداتي الحقيقية — تُضاف هنا فور توفرها.</p>
+        <p>أرقام حقيقية من الكورس نفسه — وصوري وشهاداتي الحقيقية تُضاف هنا فور توفرها.</p>
       </div>
       <div class="stats" role="list" aria-label="أرقام التدريب">
-        <div class="stat" role="listitem"><b>—</b><span>متدرباً ومتدربة</span></div>
-        <div class="stat" role="listitem"><b>—</b><span>سنوات خبرة في التدريب</span></div>
-        <div class="stat" role="listitem"><b>—</b><span>ورشة ومحاضرة مقدمة</span></div>
-        <div class="stat" role="listitem"><b>—</b><span>جهة ومعهداً تعاونت معه</span></div>
+        <div class="stat" role="listitem"><b>20</b><span>محاضرة مسجلة</span></div>
+        <div class="stat" role="listitem"><b>5.5</b><span>ساعات عملية</span></div>
+        <div class="stat" role="listitem"><b>4</b><span>جلسات مباشرة</span></div>
+        <div class="stat" role="listitem"><b>40</b><span>أمراً تعليمياً</span></div>
       </div>
       <div class="shots">
         <div class="ph-slot">
@@ -774,9 +780,8 @@ window.SITE_CONFIG = {
             <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>عروض تقديمية من نص الدرس: هيكل أولاً، ثم تصميم في دقائق</li>
             <li><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>برومبتات جاهزة بالعربية لكل مهام المعلم المتكررة</li>
           </ul>
-          <!-- PLACEHOLDER — رابط شراء الكورس: استبدل href="#course-link" برابط صفحة الشراء الحقيقي -->
-          <a class="btn btn-red" href="#course-link">اشترِ الكورس</a>
-          <p class="note">سيُربط زر الشراء بصفحة الكورس فور تجهيزها.</p>
+          <a class="btn btn-red" href="https://course.manasadigital.com" target="_blank" rel="noopener">اشترِ الكورس</a>
+          <p class="note">الدفع عبر صفحة الكورس: شام كاش من داخل سوريا، وبالبطاقات ومدى وبايبال من خارجها — ضمان استرجاع 7 أيام.</p>
         </article>
       </div>
     </div>
@@ -800,7 +805,7 @@ window.SITE_CONFIG = {
           </div>
           <h2 style="font-size:clamp(28px,4.4vw,40px);font-weight:900;margin-bottom:20px;">أدرّب على الشغل الحقيقي، <span class="red">لا على النظريات</span></h2>
           <p>أنا <b>نواف البوسطة</b>، مدرّب ذكاء اصطناعي من سوريا. أعلّم <b>أي شخص</b> استخدام الذكاء الاصطناعي في شغله اليومي: معلمين في سوريا والخليج، ومدراء مشاريع، ومسوّقين، وصنّاع محتوى ومستقلين. المشكلة واحدة عند الجميع: مهام متكررة تلتهم اليوم كله — تحضير وكتابة وخطط وتقارير — والذكاء الاصطناعي، إن استُخدم صح، يعيد لك هذا الوقت.</p>
-          <p>أدرّب على أدوات عملية في مقدمتها <b>Claude</b>، وأقدّم ورشات للمعاهد والمدارس وتدريباً للأفراد والفرق، وأطوّر <b>منصة مناسة الرقمية</b> للمنتجات الرقمية العربية. منهجي ثابت: تطبيق فوري على شغلك الحقيقي، لا شرح نظري طويل.</p>
+          <p>أحوّل التقنيات الحديثة إلى حلول عملية قابلة للتطبيق للأفراد والشركات والمؤسسات التعليمية، وأقدّم ورشات للمعاهد والمدارس وتدريباً للأفراد والفرق، وأطوّر <b>منصة Manasa Digital</b> للمنتجات الرقمية العربية. منهجي ثابت: تطبيق فوري على شغلك الحقيقي، لا شرح نظري طويل.</p>
           <a class="btn btn-ghost" href="#workshops" style="margin-top:8px;">اطلب ورشة لمعهدك</a>
         </div>
         <div class="about-points">
@@ -864,22 +869,33 @@ window.SITE_CONFIG = {
         <h2>شاهد <span class="red">وتعلّم</span></h2>
         <p>مقاطع عملية قصيرة من تدريباتي ومحتواي — تُضمَّن هنا أحدث الفيديوهات.</p>
       </div>
-      <!-- PLACEHOLDER — فيديوهات مضمّنة: استبدل كل صندوق بكود تضمين الفيديو الحقيقي -->
       <div class="video-slots">
-        <div class="video-ph">
-          <span class="play"><svg viewBox="0 0 24 24"><path d="M9 7.5v9l8-4.5z"/></svg></span>
-          <b>فيديو ١</b>
-          <span>ضع هنا رابط تضمين الفيديو الأول.</span>
+        <div class="video-embed">
+          <div class="video-frame">
+            <iframe src="https://www.youtube-nocookie.com/embed/u-fb-Skw0kU" title="فيديو تعليمي — مادة العلوم" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+          <div class="video-cap">
+            <b>فيديو تعليمي — مادة العلوم</b>
+            <span>شرح مفهوم علمي بصوت وصورة أنشئت بالذكاء الاصطناعي دون تصوير</span>
+          </div>
         </div>
-        <div class="video-ph">
-          <span class="play"><svg viewBox="0 0 24 24"><path d="M9 7.5v9l8-4.5z"/></svg></span>
-          <b>فيديو ٢</b>
-          <span>ضع هنا رابط تضمين الفيديو الثاني.</span>
+        <div class="video-embed">
+          <div class="video-frame">
+            <iframe src="https://www.youtube-nocookie.com/embed/XQNR8vzC7BQ" title="فيديو تعليمي — مادة الكيمياء" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+          <div class="video-cap">
+            <b>فيديو تعليمي — مادة الكيمياء</b>
+            <span>تبسيط تجربة كيميائية ومخطط تفاعلي مرئي للطلاب بدقائق</span>
+          </div>
         </div>
-        <div class="video-ph">
-          <span class="play"><svg viewBox="0 0 24 24"><path d="M9 7.5v9l8-4.5z"/></svg></span>
-          <b>فيديو ٣</b>
-          <span>ضع هنا رابط تضمين الفيديو الثالث.</span>
+        <div class="video-embed">
+          <div class="video-frame">
+            <iframe src="https://www.youtube-nocookie.com/embed/ednZg7GZt2Q" title="فيديو تعليمي — اللغة الإنكليزية" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+          <div class="video-cap">
+            <b>فيديو تعليمي — اللغة الإنكليزية</b>
+            <span>نطق سليم وشرح لقواعد ومفردات الدرس بالصوت والصورة</span>
+          </div>
         </div>
       </div>
       <div id="videoArea" style="display:none;">
@@ -1174,7 +1190,7 @@ window.SITE_CONFIG = {
           <li><a href="https://wa.me/963985323170" target="_blank" rel="noopener">واتساب: <span dir="ltr">00963 985 323 170</span></a></li>
           <li><a href="https://www.instagram.com/noaf.ai/" target="_blank" rel="noopener">إنستغرام: noaf.ai@</a></li>
           <li><a href="https://www.facebook.com/profile.php?id=217434378131027" target="_blank" rel="noopener">فيسبوك: صفحة noaf.ai</a></li>
-          <li><a href="https://manasadigital.com/" target="_blank" rel="noopener">منصة مناسة الرقمية</a></li>
+          <li><a href="https://manasadigital.com/" target="_blank" rel="noopener">منصة Manasa Digital</a></li>
         </ul>
       </div>
     </div>
