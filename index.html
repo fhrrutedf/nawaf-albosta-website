@@ -454,11 +454,6 @@
   #dashboard[hidden]{ display:none !important; }
 
   /* ---------- Dashboard password gate ---------- */
-  .admin-link{
-    background:none; border:none; padding:0; cursor:pointer; font-family:var(--body);
-    font-size:13px; color:var(--faint); opacity:.75;
-  }
-  .admin-link:hover{ color:var(--muted); opacity:1; text-decoration:underline; }
   .gate{
     position:fixed; inset:0; z-index:95; display:none; align-items:center; justify-content:center;
     background:rgba(10,8,7,.72); backdrop-filter:blur(6px); padding:20px;
@@ -478,6 +473,14 @@
   }
   .gate-x:hover{ border-color:var(--red); color:var(--red); }
   .gate-form{ display:grid; gap:12px; }
+  .gate-pw{
+    width:100%; background:var(--bg-soft); border:1.5px solid var(--line); border-radius:12px;
+    padding:12px 15px; color:var(--ink); font-family:var(--body); font-size:16px; min-height:50px;
+    text-align:left;
+  }
+  .gate-pw:focus{ outline:none; border-color:var(--red); }
+  .gate-card p.gate-err{ color:#ff7a72; font-size:14px; line-height:1.6; margin:0; display:none; }
+  .gate-card p.gate-err.show{ display:block; }
 
   /* ---------- Responsive ---------- */
   @media (max-width: 960px){
@@ -1024,7 +1027,6 @@
     <div class="foot-bottom">
       <span>© 2026 نواف البوسطة — جميع الحقوق محفوظة</span>
       <span>noaf.ai</span>
-      <button class="admin-link" id="adminOpen" type="button">لوحة التحكم</button>
     </div>
   </div>
 </footer>
@@ -1054,15 +1056,17 @@
   </div>
 </div>
 
-<!-- ===== Dashboard gate (owner only) ===== -->
+<!-- ===== Dashboard password gate (owner only — opened via the secret link) ===== -->
 <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
   <div class="gate-card">
     <button class="gate-x" id="gateClose" type="button" aria-label="إغلاق">✕</button>
     <h3 id="gateTitle">لوحة التحكم</h3>
-    <p>هذا القسم خاص بصاحب الموقع ولا يظهر للزوار أبداً. إظهاره يعمل في جلستك الحالية فقط — وتحديث الصفحة يعيد إخفاءه.</p>
-    <div class="gate-form">
-      <button class="btn btn-red" id="gateShow" type="button" style="justify-self:start;">إظهار اللوحة</button>
-    </div>
+    <p>هذا القسم خاص بصاحب الموقع ولا يظهر للزوار أبداً. أدخل كلمة المرور للمتابعة — الإظهار يعمل في جلستك الحالية فقط، وتحديث الصفحة يعيد إخفاء اللوحة.</p>
+    <form class="gate-form" id="gateForm" novalidate>
+      <input class="gate-pw" id="gatePw" type="password" dir="ltr" autocomplete="current-password" placeholder="كلمة المرور" aria-label="كلمة المرور" />
+      <p class="gate-err" id="gateErr" role="alert">كلمة المرور غير صحيحة</p>
+      <button class="btn btn-red" id="gateSubmit" type="submit" style="justify-self:start;">دخول</button>
+    </form>
   </div>
 </div>
 
@@ -1549,22 +1553,34 @@
   "use strict";
 
   /* ================= Dashboard gate (owner only) =================
-     اللوحة مخفية تماماً عن الزوار ولا تظهر إلا من رابط «لوحة التحكم»
-     الصغير في التذييل. الإظهار يسري على هذه الجلسة فقط — تحديث
-     الصفحة يعيد إخفاءها. */
+     اللوحة مخفية تماماً عن الزوار: لا زر ولا رابط ظاهر لها في الصفحة.
+     الدخول عبر الرابط السرّي فقط — ‎#admin-nawaf في نهاية الرابط
+     أو ‎?admin=nawaf — ثم إدخال كلمة المرور. التحقق بتجزئة PBKDF2
+     (SHA-256، 100000 دورة، ملح ثابت) وكلمة المرور نفسها غير مكتوبة
+     نصاً في الكود. الإظهار يسري على الجلسة الحالية فقط — تحديث
+     الصفحة يعيد إخفاء اللوحة. */
   var dash = document.getElementById("dashboard");
   var gate = document.getElementById("gate");
+  var form = document.getElementById("gateForm");
+  var pwInput = document.getElementById("gatePw");
+  var err = document.getElementById("gateErr");
   var unlocked = false;
+
+  var SALT = "nawaf-albosta-admin-v1";
+  var ITERATIONS = 100000;
+  var EXPECTED = "c9b46595270b8ee2c3bd105eb121534f8105f4aeb990cb69da059e95919414e9";
 
   function openGate(){
     if (unlocked) { dash.scrollIntoView({ behavior: "smooth" }); return; }
     gate.classList.add("open");
     document.body.style.overflow = "hidden";
-    setTimeout(function(){ document.getElementById("gateShow").focus(); }, 40);
+    setTimeout(function(){ pwInput.focus(); }, 40);
   }
   function closeGate(){
     gate.classList.remove("open");
     document.body.style.overflow = "";
+    err.classList.remove("show");
+    pwInput.value = "";
   }
   function unlock(){
     unlocked = true;
@@ -1572,14 +1588,48 @@
     dash.hidden = false;
     dash.scrollIntoView({ behavior: "smooth" });
   }
+  function hexOf(buf){
+    var bytes = new Uint8Array(buf), out = "", i;
+    for (i = 0; i < bytes.length; i++) out += ("0" + bytes[i].toString(16)).slice(-2);
+    return out;
+  }
+  function checkPassword(pw){
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveBits"])
+      .then(function(key){
+        return crypto.subtle.deriveBits(
+          { name: "PBKDF2", salt: enc.encode(SALT), iterations: ITERATIONS, hash: "SHA-256" },
+          key, 256);
+      })
+      .then(function(bits){ return hexOf(bits) === EXPECTED; });
+  }
 
-  document.getElementById("adminOpen").addEventListener("click", openGate);
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    err.classList.remove("show");
+    checkPassword(pwInput.value).then(function(ok){
+      if (ok) { unlock(); }
+      else {
+        err.classList.add("show");
+        pwInput.value = "";
+        pwInput.focus();
+      }
+    });
+  });
   document.getElementById("gateClose").addEventListener("click", closeGate);
-  document.getElementById("gateShow").addEventListener("click", unlock);
   gate.addEventListener("click", function(e){ if (e.target === gate) closeGate(); });
   document.addEventListener("keydown", function(e){
     if (e.key === "Escape" && gate.classList.contains("open")) closeGate();
   });
+
+  /* فتح نافذة كلمة المرور من الرابط السرّي فقط */
+  function secretLink(){
+    if (window.location.hash === "#admin-nawaf") return true;
+    try { return new URLSearchParams(window.location.search).get("admin") === "nawaf"; }
+    catch (e) { return /[?&]admin=nawaf(&|$)/.test(window.location.search); }
+  }
+  if (secretLink()) openGate();
+  window.addEventListener("hashchange", function(){ if (secretLink()) openGate(); });
 })();
 </script>
 </body>
